@@ -23,6 +23,7 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
+const merge = require('webpack-merge');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -89,7 +90,7 @@ const getStyleLoaders = (cssOptions, preProcessor) => {
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
 // The development configuration is different and lives in a separate file.
-module.exports = {
+const config = {
   mode: 'production',
   // Don't attempt to continue if there are any errors.
   bail: true,
@@ -480,3 +481,8 @@ module.exports = {
   // our own hints via the FileSizeReporter
   performance: false,
 };
+
+const appDirectory = fs.realpathSync(process.cwd());
+const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
+
+module.exports = merge.smart(config, require(resolveApp('webpack.config.prod.js')));
